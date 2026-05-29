@@ -1,0 +1,6 @@
+{
+  "name": "Simulador De Espaço Ypê Execução",
+  "description": "Ferramenta profissional e enxuta para simulação de planograma, controle de frentes da categoria e geração de fórmulas Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
