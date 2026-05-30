@@ -92,65 +92,6 @@ function MeterInput({ value, onChange, className, id }: MeterInputProps) {
   );
 }
 
-interface PercentInputProps {
-  value: number;
-  onChange: (val: number) => void;
-  className?: string;
-  id?: string;
-}
-
-function PercentInput({ value, onChange, className, id }: PercentInputProps) {
-  const [localValue, setLocalValue] = React.useState<string>('');
-  const [isFocused, setIsFocused] = React.useState(false);
-
-  // Sincroniza o valor vindo das props quando não está focado
-  React.useEffect(() => {
-    if (!isFocused) {
-      // Exibe formatado em porcentagem com vírgula, ex: 15,5
-      setLocalValue(value.toFixed(1).replace('.', ','));
-    }
-  }, [value, isFocused]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value;
-    setLocalValue(rawVal);
-    
-    // Substitui vírgula por ponto para conversão JS
-    const cleanStr = rawVal.replace('%', '').replace(',', '.').trim();
-    const parsed = parseFloat(cleanStr);
-    if (!isNaN(parsed) && parsed >= 0) {
-      onChange(parsed);
-    }
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    const cleanStr = localValue.replace('%', '').replace(',', '.').trim();
-    let parsed = parseFloat(cleanStr);
-    if (isNaN(parsed) || parsed < 0) parsed = 0;
-    onChange(parsed);
-    // Formata o valor final para o padrão com vírgula ao perder o foco (ex: 15,5)
-    setLocalValue(parsed.toFixed(1).replace('.', ','));
-  };
-
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
-  return (
-    <input
-      type="text"
-      value={localValue}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onFocus={handleFocus}
-      className={className}
-      id={id}
-      placeholder="0,0"
-    />
-  );
-}
-
 interface SpreadsheetViewProps {
   categories: CategoryItem[];
   setCategories: React.Dispatch<React.SetStateAction<CategoryItem[]>>;
@@ -333,18 +274,10 @@ export default function SpreadsheetView({
                       {formatMissingSpaceAuto(missingSpace)}
                     </td>
 
-                    {/* EDITÁVEL: Meta Ypê Execução % */}
-                    <td className="p-1 px-4 border-r border-slate-100 text-center bg-indigo-50/5">
-                      <div className="flex items-center justify-center gap-1">
-                        <PercentInput
-                          value={item.ypeMetaPercent}
-                          onChange={(val) => handleUpdateCell(item.id, 'ypeMetaPercent', val)}
-                          className="w-16 px-1.5 py-1 text-center bg-transparent hover:bg-slate-100/50 focus:bg-white focus:ring-1 focus:ring-indigo-300 focus:outline-none rounded transition-colors font-mono font-extrabold text-indigo-600"
-                          id={`input-ype-meta-${item.id}`}
-                        />
-                        <span className="text-xs font-mono text-indigo-500 font-medium">%</span>
-                      </div>
-                    </td>
+                  {/* Meta Ypê Execução % (Não Editável) */}
+                  <td className="py-3 px-4 border-r border-slate-100 text-center font-mono font-semibold text-slate-750 bg-slate-50/10 select-none">
+                    {item.ypeMetaPercent.toFixed(1).replace('.', ',')}%
+                  </td>
 
                     {/* FÓRMULARIO: Execução % */}
                     <td className={`py-3 px-4 text-center font-mono select-none border-r border-slate-100 font-extrabold ${
@@ -404,11 +337,11 @@ export default function SpreadsheetView({
               <span>Restaurar Exemplo</span>
             </button>
 
-            {/* Baixar Tabela */}
+            {/* Baixar para Excel */}
             <button
               onClick={onExport}
               className="flex items-center gap-1.5 px-4 py-2 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-all shadow-sm shadow-emerald-100 cursor-pointer"
-              title="Exportar para Excel e Google Sheets"
+              title="Exportar no formato ideal para Microsoft Excel / Google Sheets"
               id="header-btn-export"
             >
               <Download size={13} />
